@@ -256,9 +256,15 @@ if __name__ == '__main__':
     # #找到最佳的训练批次
     # max_aveauroc = 0
     # best_epoch = 0
-    # f = open("%s/evalution/epoch_auroc.txt" %args.model_dir, "w")
+    # f = open("%s/evalution/epoch_auroc.csv" %args.model_dir, "w")
+    # headline = "epoch"
+    # for _type in types:
+    #     headline+=",%s"%_type
+    # headline += ",average\n"
+    # f.write("%s,")
     # for epnum in range(100,10000,100):
     #     obj = defaultdict(list)
+    #     f.write("%d"%epnum)
     #     for data_type in types:
     #         print(f"evaluating {data_type}")
     #         model_name = "%s/%s/%d.pdparams" % (args.model_dir, data_type,epnum)
@@ -267,9 +273,11 @@ if __name__ == '__main__':
     #         print(f"{data_type} AUC: {roc_auc}")
     #         obj["defect_type"].append(data_type)
     #         obj["roc_auc"].append(roc_auc)
+    #         f.write(",%f"%roc_auc)
     #     ave_auroc = np.mean(obj["roc_auc"])
     #     obj["defect_type"].append("average")
     #     obj["roc_auc"].append(ave_auroc)
+    #     f.write(",%f\n"%ave_auroc)
     #     print("epoch%d ave_auroc %.5f"%(epnum,ave_auroc))
     #     if ave_auroc > max_aveauroc:
     #         df = pd.DataFrame(obj)
@@ -277,7 +285,6 @@ if __name__ == '__main__':
     #         max_aveauroc = ave_auroc
     #         best_epoch = epnum
     #         print("best epoch: %d max auroc: %.5f"%(epnum,ave_auroc))
-    #     f.write("epoch%d ave_auroc %.5f\n"%(epnum,ave_auroc))
     # f.write("best_epoch%d best_ave_auroc %.5f" % (best_epoch, max_aveauroc))
     # f.close()
 
