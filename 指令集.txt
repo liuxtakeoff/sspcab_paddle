@@ -1,0 +1,17 @@
+全量训练及验证：
+python tools/eval.py
+python tools/train.py --epochs 10000 --batch_size 32 --workers 4 --log_interval 200 --save_interval 100
+lite_data训练及验证：
+python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --no_pretrained
+python tools/eval.py --data_dir lite_data --type lite 
+
+预测demo（需要先运行train.py和eval.py）:
+基于代码预测：
+python tools/predict.py --data_type bottle --img-path images/demo0.png --dist_th 0.5
+基于引擎预测:
+python deploy/export_model.py
+python deploy/infer.py --data_type bottle --img-path images/demo0.png --dist_th 0.5
+
+tipc：
+bash test_tipc/prepare.sh test_tipc/configs/resnet18/train_infer_python.txt lite_train_lite_infer
+bash test_tipc/test_train_inference_python.sh test_tipc/configs/resnet18/train_infer_python.txt lite_train_lite_infer
