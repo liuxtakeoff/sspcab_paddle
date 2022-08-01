@@ -74,7 +74,6 @@ if __name__ == '__main__':
 
     with paddle.no_grad():
         embed,logit,_,_ = model(img)
-        print(embed.shape,logit.shape)
     embed =paddle.nn.functional.normalize(embed, p=2, axis=1)
     distances = density.predict(embed)
     if distances[0] >= args.dist_th:
