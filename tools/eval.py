@@ -39,7 +39,7 @@ def get_train_embeds(model, size, defect_type, transform, device="cuda",datadir=
 
 
 def eval_model(modelname, defect_type, device="cpu", save_plots=False, size=256, show_training_data=False, model=None,
-               train_embed=None, head_layer=8, density=GaussianDensityPaddle(),data_dir = "Data"):
+               train_embed=None, head_layer=8, density=GaussianDensityPaddle(),data_dir = "Data",args=None):
     # create test dataset
     global test_data_eval, test_transform, cached_type
 
@@ -89,7 +89,7 @@ def eval_model(modelname, defect_type, device="cpu", save_plots=False, size=256,
 
     # create eval plot dir
     if save_plots:
-        eval_dir = Path("logs") / data_type
+        eval_dir = Path("logs") / defect_type
         eval_dir.mkdir(parents=True, exist_ok=True)
 
         # plot tsne
@@ -148,15 +148,14 @@ def eval_model(modelname, defect_type, device="cpu", save_plots=False, size=256,
     else:
         eval_dir = Path("unused")
 
-    print(f"using density estimation {density.__class__.__name__}")
-    # density.fit(train_embed,"logs/%s/kde.crf"%defect_type)
+#     print(f"using density estimation {density.__class__.__name__}")
     if args.density == "paddle":
         density.fit(train_embed,"logs/%s/params.crf"%defect_type)
     else:
         density.fit(train_embed,"logs/%s/kde.crf"%defect_type)
     distances_train = density.predict(train_embed)
     mind,maxd = min(distances_train),max(distances_train)
-    with open("logs/%s/minmaxdist.txt"%data_type,"w") as f_dist:
+    with open("logs/%s/minmaxdist.txt"%defect_type,"w") as f_dist:
         f_dist.write("min %.6f max %.6f"%(mind,maxd))
     distances = density.predict(embeds)
     distances = (distances-mind)/(maxd-mind+1e-8)
@@ -253,47 +252,47 @@ if __name__ == '__main__':
     eval_dir = Path(args.model_dir + "/evalution")
     eval_dir.mkdir(parents=True, exist_ok=True)
 
-    #找到最佳的训练批次
-    max_aveauroc = 0
-    best_epoch = 0
-    f = open("%s/evalution/epoch_auroc.csv" %args.model_dir, "w")
-    headline = "epoch"
-    for _type in types:
-        headline+=",%s"%_type
-    headline += ",average\n"
-    f.write(headline)
-    for epnum in range(3000,8000,50):
-        obj = defaultdict(list)
-        f.write("%d"%epnum)
-        for data_type in types:
-            print(f"evaluating {data_type}")
-            model_name = "%s/%s/%d.pdparams" % (args.model_dir, data_type,epnum)
-            roc_auc = eval_model(model_name, data_type, save_plots=save_plots, device=device,
-                                 head_layer=args.head_layer, density=density(), data_dir=args.data_dir)
-            print(f"{data_type} AUC: {roc_auc}")
-            obj["defect_type"].append(data_type)
-            obj["roc_auc"].append(roc_auc)
-            f.write(",%f"%roc_auc)
-        ave_auroc = np.mean(obj["roc_auc"])
-        obj["defect_type"].append("average")
-        obj["roc_auc"].append(ave_auroc)
-        f.write(",%f\n"%ave_auroc)
-        print("epoch%d ave_auroc %.5f"%(epnum,ave_auroc))
-        if ave_auroc > max_aveauroc:
-            df = pd.DataFrame(obj)
-            df.to_csv(str(eval_dir) + "/best_perf.csv")
-            max_aveauroc = ave_auroc
-            best_epoch = epnum
-            print("best epoch: %d max auroc: %.5f"%(epnum,ave_auroc))
-    f.write("best_epoch%d, best_ave_auroc %.5f" % (best_epoch, max_aveauroc))
-    f.close()
+    # #找到最佳的训练批次
+    # max_aveauroc = 0
+    # best_epoch = 0
+    # f = open("%s/evalution/epoch_auroc.csv" %args.model_dir, "w")
+    # headline = "epoch"
+    # for _type in types:
+    #     headline+=",%s"%_type
+    # headline += ",average\n"
+    # f.write(headline)
+    # for epnum in range(3000,8000,50):
+    #     obj = defaultdict(list)
+    #     f.write("%d"%epnum)
+    #     for data_type in types:
+    #         print(f"evaluating {data_type}")
+    #         model_name = "%s/%s/%d.pdparams" % (args.model_dir, data_type,epnum)
+    #         roc_auc = eval_model(model_name, data_type, save_plots=save_plots, device=device,
+    #                              head_layer=args.head_layer, density=density(), data_dir=args.data_dir,args = args)
+    #         print(f"{data_type} AUC: {roc_auc}")
+    #         obj["defect_type"].append(data_type)
+    #         obj["roc_auc"].append(roc_auc)
+    #         f.write(",%f"%roc_auc)
+    #     ave_auroc = np.mean(obj["roc_auc"])
+    #     obj["defect_type"].append("average")
+    #     obj["roc_auc"].append(ave_auroc)
+    #     f.write(",%f\n"%ave_auroc)
+    #     print("epoch%d ave_auroc %.5f"%(epnum,ave_auroc))
+    #     if ave_auroc > max_aveauroc:
+    #         df = pd.DataFrame(obj)
+    #         df.to_csv(str(eval_dir) + "/best_perf.csv")
+    #         max_aveauroc = ave_auroc
+    #         best_epoch = epnum
+    #         print("best epoch: %d max auroc: %.5f"%(epnum,ave_auroc))
+    # f.write("best_epoch%d, best_ave_auroc %.5f" % (best_epoch, max_aveauroc))
+    # f.close()
 
     obj = defaultdict(list)
     for data_type in types:
         print(f"evaluating {data_type}")
         model_name = "%s/%s/final.pdparams"%(args.model_dir,data_type)
         roc_auc = eval_model(model_name, data_type, save_plots=save_plots, device=device,
-                             head_layer=args.head_layer, density=density(),data_dir=args.data_dir)
+                             head_layer=args.head_layer, density=density(),data_dir=args.data_dir,args=args)
         print(f"{data_type} AUC: {roc_auc}")
         obj["defect_type"].append(data_type)
         obj["roc_auc"].append(roc_auc)
@@ -303,4 +302,4 @@ if __name__ == '__main__':
     print("average auroc:%.4f"%ave_auroc)
 
     df = pd.DataFrame(obj)
-    df.to_csv(str(eval_dir) + "/total_perf.csv")
+    df.to_csv(str(eval_dir) + "/total_performence.csv")
