@@ -45,7 +45,7 @@ class MVTecAT(Dataset):
             self.imgs = Parallel(n_jobs=10)(
                 delayed(lambda file: Image.open(file).resize((size, size)).convert("RGB"))(file) for file in
                 self.image_names)
-            print(f"loaded {len(self.imgs)} images")
+#             print(f"loaded {len(self.imgs)} images")
         else:
             # test mode
             self.image_names = list((self.root_dir / defect_name / "test").glob(str(Path("*") / "*.png")))
