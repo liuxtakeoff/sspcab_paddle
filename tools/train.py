@@ -15,10 +15,11 @@ sys.path.append(os.path.abspath(os.path.join(__dir__, '../')))
 from tools.dataset import MVTecAT, Repeat
 from tools.cutpaste import CutPasteNormal, CutPasteScar, CutPaste3Way, CutPasteUnion, cut_paste_collate_fn
 from tools.model import ProjectionNet_sspcab as ProjectionNet
+from tools.eval import eval_model
 import os
 import random
 import numpy as np
-seed = 20220802
+seed = 2022961
 paddle.seed(seed)
 np.random.seed(seed)
 random.seed(seed)
@@ -74,7 +75,7 @@ def run_training(data_type="bottle",
     loss_fn = paddle.nn.CrossEntropyLoss()
     loss_sspcab = paddle.nn.MSELoss()
     if optim_name == "sgd":
-        scheduler = CosineAnnealingDecay(learning_rate=learninig_rate, T_max=10000)
+        scheduler = CosineAnnealingDecay(learning_rate=learninig_rate, T_max=65536)
         optimizer = optim.Momentum(parameters=model.parameters(), learning_rate=scheduler, momentum=momentum,
                                    weight_decay=weight_decay)
         # scheduler = None
@@ -94,6 +95,8 @@ def run_training(data_type="bottle",
     total_loss = 0
     total_reader_cost = 0
     t0 = time.time()
+    max_auroc = 0
+    # f_epoch_auroc = open("%s/%s/epoch")
     for epoch in range(epochs):
         if epoch == freeze_resnet:
             model.unfreeze()
@@ -118,23 +121,40 @@ def run_training(data_type="bottle",
         optimizer.step()
         if scheduler is not None:
             scheduler.step()
+        with paddle.no_grad():
+            predicted = paddle.argmax(logits, axis=1)
+            # print(logits)
+            # print(predicted)
+            # print(y)
+            # print(predicted.shape[0])
+            accuracy = paddle.divide(paddle.sum(predicted == y), paddle.to_tensor(predicted.shape[0]))
 
-        predicted = paddle.argmax(logits, axis=1)
-        # print(logits)
-        # print(predicted)
-        # print(y)
-        # print(predicted.shape[0])
-        accuracy = paddle.divide(paddle.sum(predicted == y), paddle.to_tensor(predicted.shape[0]))
-        if epoch % args.log_interval == 0:
-            total_bacth_cost = time.time() - t0
+            if test_epochs>0 and epoch%test_epochs == 0:
+                batch_embeds = []
+                batch_embeds.append(embeds.cpu().detach())
+                model.eval()
+                roc_auc = eval_model("", data_type, device=device,
+                                     save_plots=False,
+                                     size=size,
+                                     show_training_data=False,
+                                     model=model)
+                if roc_auc > max_auroc:
+                    max_auroc = roc_auc
+                    paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,
+                                                             "final.pdparams" % epoch))
+                # train_embed=batch_embeds)
+                model.train()
+            if epoch % args.log_interval == 0:
+                total_bacth_cost = time.time() - t0
 
-            print("epoch:%d/%d loss:%.4f acc:%.3f avg_reader_cost:%.3f avg_batch_cost:%.3f avg_ips:%.3f lr:%.6f"%(
-            epoch+1,epochs,loss,accuracy,total_reader_cost/(epoch+1),total_bacth_cost/(epoch+1),total_bacth_cost/(epoch+1)/batch_size,optimizer.get_lr()
-            ))
-        if epoch % save_interval == 0 and epoch >=2500:
-            paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,
-                                                         "%d.pdparams" % epoch))
-    paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,"final.pdparams"))
+                print("epoch:%d/%d loss:%.4f acc:%.3f avg_reader_cost:%.3f avg_batch_cost:%.3f avg_ips:%.3f lr:%.6f"%(
+                epoch+1,epochs,loss,accuracy,total_reader_cost/(epoch+1),total_bacth_cost/(epoch+1),total_bacth_cost/(epoch+1)/batch_size,optimizer.get_lr()
+                ))
+            # if epoch % save_interval == 0 and epoch >0:
+            #     paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,
+            #                                                  "%d.pdparams" % epoch))
+    if test_epochs<0:
+        paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,"final.pdparams"))
 
 
 if __name__ == '__main__':
