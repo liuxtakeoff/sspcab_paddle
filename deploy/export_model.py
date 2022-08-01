@@ -9,7 +9,7 @@ paddle.set_device("cpu")
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.abspath(os.path.join(__dir__, '../')))
 
-from tools.model import ProjectionNet
+from tools.model import ProjectionNet_sspcab as ProjectionNet
 
 
 def get_args(add_help=True):
