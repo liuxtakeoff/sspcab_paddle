@@ -123,10 +123,7 @@ def run_training(data_type="bottle",
             scheduler.step()
         with paddle.no_grad():
             predicted = paddle.argmax(logits, axis=1)
-            # print(logits)
-            # print(predicted)
-            # print(y)
-            # print(predicted.shape[0])
+
             accuracy = paddle.divide(paddle.sum(predicted == y), paddle.to_tensor(predicted.shape[0]))
 
             if test_epochs>0 and epoch%test_epochs == 0:
@@ -150,9 +147,6 @@ def run_training(data_type="bottle",
                 print("epoch:%d/%d loss:%.4f acc:%.3f avg_reader_cost:%.3f avg_batch_cost:%.3f avg_ips:%.3f lr:%.6f"%(
                 epoch+1,epochs,loss,accuracy,total_reader_cost/(epoch+1),total_bacth_cost/(epoch+1),total_bacth_cost/(epoch+1)/batch_size,optimizer.get_lr()
                 ))
-            # if epoch % save_interval == 0 and epoch >0:
-            #     paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,
-            #                                                  "%d.pdparams" % epoch))
     if test_epochs<0:
         paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,"final.pdparams"))
 
