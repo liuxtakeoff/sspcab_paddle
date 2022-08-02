@@ -152,7 +152,6 @@ def run_training(data_type="bottle",
 
 
 if __name__ == '__main__':
-    # place = paddle.CUDAPlace(0)
     parser = argparse.ArgumentParser(description='Training defect detection as described in the CutPaste Paper.')
     parser.add_argument('--type', default="all",help='MVTec defection dataset type to train seperated by , (default: "all": train all defect types)')
     parser.add_argument('--epochs', default=256, type=int,help='number of epochs to train the model , (default: 256)')
@@ -196,12 +195,13 @@ if __name__ == '__main__':
         types = ["bottle"]
         args.data_dir = "lite_data"
     print(args)
+
     variant_map = {'normal': CutPasteNormal, 'scar': CutPasteScar, '3way': CutPaste3Way, 'union': CutPasteUnion}
     variant = variant_map[args.variant]
 
     device = "cuda" if args.cuda in ["True","1","y",True] else "cpu"
     print(f"using device: {device}")
-
+    place = paddle.set_device(device)
     # create modle dir
     Path(args.model_dir).mkdir(exist_ok=True, parents=True)
     # save config.
