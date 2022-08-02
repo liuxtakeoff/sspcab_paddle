@@ -8,14 +8,14 @@ Linux GPU/CPU 基础训练推理测试的主程序为`test_train_inference_pytho
 
 | 算法名称 | 模型名称 | 单机单卡 | 单机多卡 |
 |  :----: |   :----:  |    :----:  |  :----:   |
-|  CutPaste  | resnet18 | 正常训练 | - |
+|  CutPaste+SSPCAB  | resnet18_sspcab | 正常训练 | - |
 
 
 - 推理相关：
 
 | 算法名称 | 模型名称 | device_CPU | device_GPU | batchsize |
 |  :----:   |  :----: |   :----:   |  :----:  |   :----:   |
-|  CutPaste   |  resnet18 |  支持 | 支持 | 1 |
+|  CutPaste+SSPCAB   |  resnet18_sspcab |  支持 | 支持 | 1 |
 
 
 ## 2. 测试流程
@@ -52,12 +52,13 @@ bash test_tipc/test_train_inference_python.sh ${your_params_file} lite_train_lit
 
 以`resnet18`的`Linux GPU/CPU 基础训练推理测试`为例，命令如下所示。
 
+准备训练环境：
 ```bash
-bash test_tipc/prepare.sh test_tipc/configs/resnet18/train_infer_python.txt lite_train_lite_infer
+bash test_tipc/prepare.sh test_tipc/configs/resnet18_sspcab/train_infer_python.txt lite_train_lite_infer
 ```
-
+tipc一体化测试：
 ```bash
-bash test_tipc/test_train_inference_python.sh test_tipc/configs/resnet18/train_infer_python.txt lite_train_lite_infer
+bash test_tipc/test_train_inference_python.sh test_tipc/configs/resnet18_sspcab/train_infer_python.txt lite_train_lite_infer
 ```
 
 输出结果如下，表示命令运行成功。
