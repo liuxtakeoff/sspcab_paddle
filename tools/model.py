@@ -24,7 +24,7 @@ class SELayer(nn.Layer):
     def forward(self, input_tensor):
         batch_size, num_channels, H, W = input_tensor.shape
 
-        squeeze_tensor = paddle.reshape(input_tensor,[batch_size,num_channels,-1]).mean(axis=2)
+        squeeze_tensor = paddle.reshape(input_tensor,[batch_size,num_channels,H*W]).mean(axis=2)
 
         # channel excitation
         fc_out_1 = self.relu(self.fc1(squeeze_tensor))
