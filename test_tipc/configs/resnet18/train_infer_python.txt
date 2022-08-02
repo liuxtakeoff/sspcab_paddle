@@ -1,5 +1,5 @@
 ===========================train_params===========================
-model_name:resnet18
+model_name:resnet18_sspcab
 python:python3.7
 gpu_list:0
 --cuda:True
