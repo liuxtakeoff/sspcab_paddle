@@ -153,7 +153,7 @@ def run_training(data_type="bottle",
             # if epoch % save_interval == 0 and epoch >0:
             #     paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,
             #                                                  "%d.pdparams" % epoch))
-    if test_epochs<0 or test_epochs > epochs:
+    if test_epochs<0 or test_epochs >= epochs:
         paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,"final.pdparams"))
 
 
