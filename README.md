@@ -84,7 +84,8 @@ CutPaste是一种简单有效的自监督学习方法，其目标是构建一个
 
 ### 3.3 准备模型
 
-- 默认不使用resnet18预训练模型进行训练，如想使用,需要传入参数：`python train.py --pretrained_resnet True`
+- 默认不使用resnet18预训练模型进行训练，如想使用,需要预先下载[预训练权重](https://pan.baidu.com/s/1QJkda31WcaY9ngALvWsGDw 
+) (提取码：l7c3)至项目根目录下并传入参数：`python train.py --pretrained_resnet True`
 
 ## 4. 开始使用
 
