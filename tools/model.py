@@ -133,16 +133,16 @@ class ProjectionNet(nn.Layer):
     def freeze_resnet(self):
         # freez full resnet18
         for param in self.resnet18.parameters():
-            param.requires_grad = False
+            param.trainable = False
 
         # unfreeze head:
         for param in self.resnet18.fc.parameters():
-            param.requires_grad = True
+            param.trainable = True
 
     def unfreeze(self):
         # unfreeze all:
         for param in self.parameters():
-            param.requires_grad = True
+            param.trainable = True
 
 
 
@@ -150,7 +150,7 @@ class ProjectionNet_sspcab(nn.Layer):
     def __init__(self, pretrained=False, head_layers=[512, 512, 512, 512, 512, 512, 512, 512, 128], num_classes=3):
         super(ProjectionNet_sspcab, self).__init__()
         #将resnet拆散，便于替换倒数第二层卷积层
-        self.resnet18 = paddle.vision.models.resnet18(pretrained=False)
+        self.resnet18 = paddle.vision.models.resnet18(pretrained=False,num_classes=0)
         if pretrained:
             self.resnet18.load_dict(paddle.load("resnet18_pretrianed_paddle.pdparams"))
         # print(self.resnet18)
