@@ -99,6 +99,8 @@ def run_training(data_type="bottle",
     total_reader_cost = 0
     t0 = time.time()
     max_auroc = 0
+    fdata = open("%s/%s/total_epochs.csv"%(model_dir,data_type),"w")
+    fdata.write("epoch,loss,auroc\n")
     for epoch in range(epochs):
         #early_stop
         if max_auroc>=0.9995:break
@@ -138,6 +140,7 @@ def run_training(data_type="bottle",
                                      show_training_data=False,
                                      model=model,
                                      args = args)
+                fdata.write("%d,%f,%f\n"%(epoch,loss,roc_auc))
                 # print("epoch:%d type:%s auroc:%f(%f)"%(epoch,data_type,roc_auc,max_auroc))
                 if roc_auc >= max_auroc:
                     max_auroc = roc_auc
@@ -153,6 +156,7 @@ def run_training(data_type="bottle",
             # if epoch % save_interval == 0 and epoch >0:
             #     paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,
             #                                                  "%d.pdparams" % epoch))
+    fdata.close()
     if test_epochs<0 or test_epochs >= epochs:
         paddle.save(model.state_dict(), os.path.join(str(model_dir),data_type,"final.pdparams"))
 
@@ -164,7 +168,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', default=256, type=int,help='number of epochs to train the model , (default: 256)')
     parser.add_argument('--model_dir', default="logs",help='output folder of the models , (default: models)')
     parser.add_argument('--data_dir', default="Data",help='path of data , (default: Data)')
-    parser.add_argument('--no_pretrained', dest='pretrained', default=True, action='store_false',help='use pretrained values to initalize ResNet18 , (default: True)')
+    parser.add_argument('--pretrained_resnet',default=False, type=bool,help='use pretrained values to initalize ResNet18 , (default: False)')
     parser.add_argument('--test_epochs', default=50, type=int,help='interval to calculate the auc during trainig, if -1 do not calculate test scores, (default: 10)')
     parser.add_argument('--freeze_resnet', default=20, type=int,help='number of epochs to freeze resnet (default: 20)')
     parser.add_argument('--lr', default=0.03, type=float,help='learning rate (default: 0.03)')
@@ -221,7 +225,7 @@ if __name__ == '__main__':
         run_training(data_type,
                      model_dir=Path(args.model_dir),
                      epochs=args.epochs,
-                     pretrained=args.pretrained,
+                     pretrained=args.pretrained_resnet,
                      test_epochs=args.test_epochs,
                      freeze_resnet=args.freeze_resnet,
                      learninig_rate=args.lr,
