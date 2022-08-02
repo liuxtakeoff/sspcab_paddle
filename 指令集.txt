@@ -1,8 +1,8 @@
 全量训练及验证：
 python tools/eval.py
-python tools/train.py --epochs 10000 --batch_size 32 --workers 4 --log_interval 10 --test_epochs 50
+python tools/train.py --epochs 10000 --batch_size 32 --workers 4 --log_interval 10 --test_epochs 50 --pretrained_resnet True
 lite_data训练及验证：
-python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --no_pretrained
+python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4
 python tools/eval.py --data_dir lite_data --type lite
 
 预测demo（需要先运行train.py和eval.py）:
