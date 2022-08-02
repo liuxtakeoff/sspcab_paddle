@@ -84,7 +84,7 @@ CutPaste是一种简单有效的自监督学习方法，其目标是构建一个
 
 ### 3.3 准备模型
 
-- 默认使用resnet18预训练模型进行训练，如想关闭,需要传入参数：`python train.py --no_pretrained`
+- 默认不使用resnet18预训练模型进行训练，如想使用,需要传入参数：`python train.py --pretrained_resnet True`
 
 ## 4. 开始使用
 
@@ -95,10 +95,10 @@ CutPaste是一种简单有效的自监督学习方法，其目标是构建一个
   - 下载好 [metec-ad](https://www.mvtec.com/company/research/datasets/mvtec-ad/) 数据集后，将其解压到 **Data** 文件夹下
   - 运行指令`python tools/train.py --epochs 10000 --batch_size 32 --workers 4 --log_interval 10 --test_epochs 50`
 - 少量数据训练：
-  - 运行指令`python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --no_pretrained`
+  - 运行指令`python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4`
 - 部分训练日志如下所示：
 ```
-> python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --cuda False --no_pretrained
+> python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --cuda False 
 Namespace(batch_size=4, cuda='False', data_dir='lite_data', epochs=5, freeze_resnet=20, head_layer=1, lr=0.03, model_dir='logs', optim='sgd', pretrained=False, save_interval=500, test_epochs=-1, type='l
 ite', variant='3way', workers=0)
 using device: cpu
@@ -114,7 +114,7 @@ epoch:3/5 loss:1.5283 acc:0.000 avg_reader_cost:0.021 avg_batch_cost:2.771 avg_i
 
 ### 4.2 模型评估
 
-- 全量数据模型评估：`python eval.py --cuda True`
+- 全量数据模型评估：`python eval.py`
 - 少量数据模型评估：`python tools/eval.py --data_dir lite_data --type lite --cuda False`
 ```
 > python tools/eval.py --data_dir lite_data --type lite --cuda False
