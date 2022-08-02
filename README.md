@@ -1,4 +1,4 @@
-# CutPaste-paddle
+# SSPCAB-paddle
 
 ## 目录
 
@@ -18,41 +18,47 @@
 - [8. 参考链接与文献]()
 
 ## 1. 简介
-cutpaste是一种简单有效的自监督学习方法，其目标是构建一个高性能的两阶段缺陷检测模型，在没有异常数据的情况下检测图像的未知异常模式。首先通过cutpaste数据增强方法学习自监督深度表示，然后在学习的表示上构建生成的单类分类器，从而实现自监督的异常检测。
+本项目基于paddlepaddle对SSPCAB-CutPatse(3-way)进行了复现。  
+SSPCAB是一个基于重建损失的预测体系模块，模块包括一个扩张卷积层和一个通道注意力模块，结构如下图所示。
+![construction](images/sspcab.png)
+SSPCAB模块可以广泛应用到各类卷积网络中，只需简单地将模块替换原有网络的某一层卷积层并添加一个损失值，即可带来性能的提升。  
+CutPaste是一种简单有效的自监督学习方法，其目标是构建一个高性能的两阶段缺陷检测模型，在没有异常数据的情况下检测图像的未知异常模式。首先通过cutpaste数据增强方法学习自监督深度表示，然后在学习的表示上构建生成的单类分类器，从而实现自监督的异常检测。
 
-**论文:** [CutPaste: Self-Supervised Learning for Anomaly Detection and Localization](https://arxiv.org/pdf/2104.04015v1.pdf)
+**论文:** [Self-Supervised Predictive Convolutional Attentive Block for Anomaly Detection](https://arxiv.org/pdf/2111.09099.pdf)
+**参考repo:** [sspcab](https://github.com/ristea/sspcab)
 
+**论文:** [CutPaste: Self-Supervised Learning for Anomaly Detection and Localization](https://https://arxiv.org/pdf/2111.09099.pdf)
 **参考repo:** [pytorch-cutpaste](https://github.com/Runinho/pytorch-cutpaste)
 
-在此非常感谢`Runinho`等人贡献的[pytorch-cutpaste](https://github.com/Runinho/pytorch-cutpaste) ，提高了本repo复现论文的效率。
+在此非常感谢`ristea`等人贡献的[sspcab](https://github.com/ristea/sspcab) 和`Runinho`等人贡献的[pytorch-cutpaste](https://github.com/Runinho/pytorch-cutpaste) 提高了本repo复现论文的效率。
 
-**aistudio体验教程:** [CutPaste_paddle](https://aistudio.baidu.com/aistudio/projectdetail/4378924?contributionType=1&shared=1)
+**aistudio体验教程:** [sspcab_paddle](https://aistudio.baidu.com/aistudio/projectdetail/4390409)
 
 
 ## 2. 数据集和复现精度
 
 - 数据集大小：共包含15个物品类别，解压后总大小在4.92G左右
 - 数据集下载链接：[mvtec-ad](https://www.mvtec.com/company/research/datasets/mvtec-ad/)
-- 训练权重下载链接：[logs](https://pan.baidu.com/s/1t7XA3y8a8w6t8w1pdkuIiA) 提取码：j74i
-# 复现精度（Comparison to Li et al.）
-| defect_type   |    CutPaste (3-way) | Runinho. CutPaste (3-way) | Li et al. CutPaste (3-way) |
+- 训练权重下载链接：[logs](https://pan.baidu.com/s/1yKPp8gxZV8_s-OcvOsICiw ) 提取码：xa5d
+# 复现精度（Comparison to Ristea.）
+| defect_type   |   CutPaste(3-way)+SSPCAB(本项目) |  Ristea. CutPaste(3-way)+SSPCAB | Li et al. CutPaste (3-way) |
 |:--------------|--------------------:|-------------------:|-----------------------------:|
-| bottle        |                97.7 |               99.6 |                         98.3 |
-| cable         |                75.9 |               77.2 |                         80.6 |
-| capsule       |                86.2 |               92.4 |                         96.2 |
-| carpet        |                97.0 |               60.1 |                         93.1 |
-| grid          |                99.7 |              100.0 |                         99.9 |
-| hazelnut      |                92.1 |               86.8 |                         97.3 |
+| bottle        |                99.4 |               98.6 |                         98.3 |
+| cable         |                89.5 |               82.9 |                         80.6 |
+| capsule       |                92.9 |               98.1 |                         96.2 |
+| carpet        |                96.4 |               90.7 |                         93.1 |
+| grid          |                99.9 |               99.9 |                         99.9 |
+| hazelnut      |                99.3 |               98.3 |                         97.3 |
 | leather       |               100.0 |              100.0 |                        100.0 |
-| metal_nut     |                96.7 |               87.8 |                         99.3 |
-| pill          |                86.2 |               91.7 |                         92.4 |
-| screw         |                78.8 |               86.8 |                         86.3 |
-| tile          |                91.8 |               97.2 |                         93.4 |
-| toothbrush    |                94.7 |               94.7 |                         98.3 |
-| transistor    |                94.1 |               93.0 |                         95.5 |
-| wood          |                96.1 |               99.4 |                         98.6 |
-| zipper        |                95.9 |               98.8 |                         99.4 |
-| average       |                92.2 |               91.0 |                         95.2 |
+| metal_nut     |                98.8 |              100.0 |                         99.3 |
+| pill          |                94.2 |               95.3 |                         92.4 |
+| screw         |                88.5 |               90.8 |                         86.3 |
+| tile          |                98.8 |               94.0 |                         93.4 |
+| toothbrush    |               100.0 |               98.8 |                         98.3 |
+| transistor    |                97.5 |               96.5 |                         95.5 |
+| wood          |                99.7 |               99.2 |                         98.6 |
+| zipper        |               100.0 |               98.1 |                         99.4 |
+| average       |                96.9 |               96.1 |                         95.2 |
 
 
 ## 3. 准备数据与环境
@@ -86,10 +92,10 @@ cutpaste是一种简单有效的自监督学习方法，其目标是构建一个
 ### 4.1 模型训练
 
 - 全量数据训练：
-  - 下载好 [metec-ad](https://www.mvtec.com/company/research/datasets/mvtec-ad/) 数据集后，将其解压到 **./Data** 文件夹下
-  - 运行指令`python tools/train.py --epochs 10000 --batch_size 32 --cuda True`
+  - 下载好 [metec-ad](https://www.mvtec.com/company/research/datasets/mvtec-ad/) 数据集后，将其解压到 **Data** 文件夹下
+  - 运行指令`python tools/train.py --epochs 10000 --batch_size 32 --workers 4 --log_interval 10 --test_epochs 50`
 - 少量数据训练：
-  - 运行指令`python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --cuda False --no_pretrained`
+  - 运行指令`python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --no_pretrained`
 - 部分训练日志如下所示：
 ```
 > python tools/train.py --data_dir lite_data --type lite --epochs 5 --batch_size 4 --cuda False --no_pretrained
@@ -99,9 +105,9 @@ using device: cpu
 training bottle
 loading images
 loaded 209 images
-epoch:1/5 loss:1.2578 avg_reader_cost:0.05 avg_batch_cost:3.01 avg_ips:0.75
-epoch:2/5 loss:1.6850 avg_reader_cost:0.02 avg_batch_cost:2.81 avg_ips:0.70
-epoch:3/5 loss:1.5016 avg_reader_cost:0.02 avg_batch_cost:2.75 avg_ips:0.69
+epoch:1/5 loss:1.5029 acc:0.000 avg_reader_cost:0.047 avg_batch_cost:2.999 avg_ips:0.750 lr:0.030000
+epoch:2/5 loss:2.1899 acc:0.000 avg_reader_cost:0.023 avg_batch_cost:2.837 avg_ips:0.709 lr:0.030000
+epoch:3/5 loss:1.5283 acc:0.000 avg_reader_cost:0.021 avg_batch_cost:2.771 avg_ips:0.693 lr:0.030000
 ...
 ``` 
 
@@ -116,7 +122,6 @@ Namespace(cuda='False', data_dir='lite_data', density='sklearn', head_layer=1, m
 evaluating bottle
 loading model logs/bottle/final.pdparams
 loading images
-loaded 8 images
 using density estimation GaussianDensitySklearn
 bottle AUC: 0.875
 average auroc:0.8750
@@ -124,18 +129,18 @@ average auroc:0.8750
 
 ### 4.3 模型预测（需要预先完成4.1训练及4.2验证）
 
-- 基于原始代码的模型预测：`python tools/predict.py --data_type bottle --img-path images/demo0.png --dist_th 0.5`
+- 基于原始代码的模型预测：`python tools/predict.py --data_type bottle --img-path images/demo0.png --dist_th 1.1`
 - 基于推理引擎的模型预测：
 ```
 python deploy/export_model.py
-python deploy/infer.py --data_type bottle --img-path images/demo0.png --dist_th 0.5
+python deploy/infer.py --data_type bottle --img-path images/demo0.png --dist_th 1.1
 ```
 部分结果如下：
 ```
 > python deploy/export_model.py
 inference model has been saved into deploy
 
-> python deploy/infer.py --data_type bottle --img-path images/demo0.png --dist_th 0.5
+> python deploy/infer.py --data_type bottle --img-path images/demo0.png --dist_th 1.1
 image_name: images/demo0.png, class_id: 0, prob: 0.07689752858017344
 ``` 
 
@@ -155,6 +160,8 @@ image_name: images/demo0.png, class_id: 0, prob: 0.07689752858017344
 本项目的发布受[Apache 2.0 license](./LICENSE)许可认证。
 
 ## 8. 参考链接与文献
-**参考论文:** [CutPaste: Self-Supervised Learning for Anomaly Detection and Localization](https://arxiv.org/pdf/2104.04015v1.pdf)
-
+**论文:** [CutPaste: Self-Supervised Learning for Anomaly Detection and Localization](https://https://arxiv.org/pdf/2111.09099.pdf)
 **参考repo:** [pytorch-cutpaste](https://github.com/Runinho/pytorch-cutpaste)
+
+**论文:** [Self-Supervised Predictive Convolutional Attentive Block for Anomaly Detection](https://arxiv.org/pdf/2111.09099.pdf)
+**参考repo:** [sspcab](https://github.com/ristea/sspcab)
