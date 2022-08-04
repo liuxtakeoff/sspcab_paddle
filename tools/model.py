@@ -133,16 +133,16 @@ class ProjectionNet(nn.Layer):
     def freeze_resnet(self):
         # freez full resnet18
         for param in self.resnet18.parameters():
-            param.trainable = False
+            param.stop_gradient = True
 
         # unfreeze head:
         for param in self.resnet18.fc.parameters():
-            param.trainable = True
+            param.stop_gradient = False
 
     def unfreeze(self):
         # unfreeze all:
         for param in self.parameters():
-            param.trainable = True
+            param.stop_gradient = False
 
 
 
@@ -205,16 +205,16 @@ class ProjectionNet_sspcab(nn.Layer):
     def freeze_resnet(self):
         # freez full resnet18
         for param in self.resnet18.parameters():
-            param.trainable = False
+            param.stop_gradient = True
 
         # unfreeze head:
         for param in self.resnet18.fc.parameters():
-            param.trainable = True
+            param.stop_gradient = False
 
     def unfreeze(self):
         # unfreeze all:
         for param in self.parameters():
-            param.trainable = True
+            param.stop_gradient = False
 
 
 # Example of how our block should be updated
